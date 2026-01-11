@@ -28,8 +28,7 @@
     {
       "matches": ["*://newsnoc/*"],
       "js": ["content.js"],
-      "run_at": "document_end",
-      "world": "MAIN"
+      "run_at": "document_end"
     }
   ],
   "host_permissions": [

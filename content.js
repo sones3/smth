@@ -160,20 +160,11 @@
       const onclickValue = actionCell.getAttribute('onclick');
       
       if (onclickValue) {
-        try {
-          eval(onclickValue);
-        } catch (e) {
-          actionCell.click();
-        }
+        actionCell.click();
       } else {
         const clickableElement = actionCell.querySelector('[onclick]');
         if (clickableElement) {
-          const innerOnclick = clickableElement.getAttribute('onclick');
-          try {
-            eval(innerOnclick);
-          } catch (e) {
-            clickableElement.click();
-          }
+          clickableElement.click();
         } else {
           actionCell.click();
         }
