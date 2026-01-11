@@ -29,24 +29,47 @@
       }
 
       const startTime = Date.now();
+      const initialDisplay = loader.style.display;
       
       const checkLoader = () => {
-        const isVisible = loader.style.display === 'block';
-        
-        if (!isVisible) {
-          resolve();
-          return;
-        }
-        
         if (Date.now() - startTime > timeout) {
           reject(new Error('Timeout: le chargement a pris trop de temps'));
           return;
+        }
+
+        const currentDisplay = loader.style.display;
+        
+        if (initialDisplay === 'block') {
+          if (currentDisplay === 'none' || currentDisplay === '') {
+            resolve();
+            return;
+          }
+        } else {
+          if (currentDisplay === 'block') {
+            setTimeout(() => {
+              const checkFinal = () => {
+                if (Date.now() - startTime > timeout) {
+                  reject(new Error('Timeout: le chargement a pris trop de temps'));
+                  return;
+                }
+                
+                if (loader.style.display === 'none' || loader.style.display === '') {
+                  resolve();
+                  return;
+                }
+                
+                setTimeout(checkFinal, 100);
+              };
+              checkFinal();
+            }, 100);
+            return;
+          }
         }
         
         setTimeout(checkLoader, 100);
       };
       
-      setTimeout(() => checkLoader(), 100);
+      checkLoader();
     });
   }
 
@@ -84,43 +107,51 @@
         return;
       }
 
-      fromDateField.value = formattedDate;
       fromDateField.focus();
+      fromDateField.value = formattedDate;
       fromDateField.dispatchEvent(new Event('input', { bubbles: true }));
       fromDateField.dispatchEvent(new Event('change', { bubbles: true }));
-      await new Promise(resolve => setTimeout(resolve, 100));
-      document.body.focus();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
-      toDateField.value = formattedDate;
+      const fromDatePicker = document.querySelector('.datepicker.datepicker-dropdown');
+      if (fromDatePicker) {
+        fromDatePicker.remove();
+      }
+      
+      document.body.focus();
+      
       toDateField.focus();
+      toDateField.value = formattedDate;
       toDateField.dispatchEvent(new Event('input', { bubbles: true }));
       toDateField.dispatchEvent(new Event('change', { bubbles: true }));
-      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const toDatePicker = document.querySelector('.datepicker.datepicker-dropdown');
+      if (toDatePicker) {
+        toDatePicker.remove();
+      }
+      
       document.body.focus();
-      await new Promise(resolve => setTimeout(resolve, 100));
       
       msisdnField.value = clipboardText.trim();
-      msisdnField.focus();
       msisdnField.dispatchEvent(new Event('input', { bubbles: true }));
       msisdnField.dispatchEvent(new Event('change', { bubbles: true }));
-      document.body.focus();
 
       submitBtn.click();
 
-      await waitForLoaderToFinish();
+      try {
+        await waitForLoaderToFinish();
+      } catch (error) {
+        return;
+      }
 
       const targetRow = document.getElementById('1');
       
       if (!targetRow) {
-        showAlert('Aucun résultat trouvé.');
         return;
       }
 
       const actionCell = targetRow.querySelector('td[aria-describedby="list_myTransactionGrid_Actions"]');
       
       if (!actionCell) {
-        showAlert('Cellule d\'action introuvable dans le résultat.');
         return;
       }
 
