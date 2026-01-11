@@ -24,15 +24,21 @@
     return new Promise((resolve, reject) => {
       const loader = document.getElementById('load_list_myTransactionGrid');
       if (!loader) {
+        console.log('SNOC Helper: Loader non trouvé');
         resolve();
         return;
       }
 
       const startTime = Date.now();
       let loaderHasAppeared = false;
+      const maxWaitForAppearance = 2000;
+      
+      console.log('SNOC Helper: État initial du loader:', loader.style.display);
       
       const checkLoader = () => {
-        if (Date.now() - startTime > timeout) {
+        const elapsed = Date.now() - startTime;
+        
+        if (elapsed > timeout) {
           reject(new Error('Timeout: le chargement a pris trop de temps'));
           return;
         }
@@ -40,10 +46,20 @@
         const currentDisplay = loader.style.display;
         
         if (currentDisplay === 'block') {
+          if (!loaderHasAppeared) {
+            console.log('SNOC Helper: Loader apparaît (block)');
+          }
           loaderHasAppeared = true;
         }
         
         if (loaderHasAppeared && (currentDisplay === 'none' || currentDisplay === '')) {
+          console.log('SNOC Helper: Loader disparu (none)');
+          resolve();
+          return;
+        }
+        
+        if (!loaderHasAppeared && elapsed > maxWaitForAppearance) {
+          console.log('SNOC Helper: Loader n\'est jamais apparu, on continue');
           resolve();
           return;
         }
@@ -57,6 +73,8 @@
 
   async function executeSearch() {
     try {
+      console.log('SNOC Helper: Début de l\'exécution');
+      
       const result = await chrome.storage.sync.get(['snocDate']);
       
       if (!result.snocDate) {
@@ -119,11 +137,18 @@
 
       submitBtn.click();
 
+      console.log('SNOC Helper: Submit cliqué, attente du loader');
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       try {
         await waitForLoaderToFinish();
       } catch (error) {
+        console.log('SNOC Helper: Erreur loader:', error.message);
         return;
       }
+
+      console.log('SNOC Helper: Loader terminé, recherche de la ligne');
 
       const targetRow = document.getElementById('1');
       
