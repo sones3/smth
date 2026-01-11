@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SNOC Transaction Helper</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SNOC Helper</h1>
+    
+    <div class="current-date">
+      <label>Date actuelle :</label>
+      <span id="currentDate">Non configurée</span>
+    </div>
+    
+    <div class="form-group">
+      <label for="dateInput">Nouvelle date (YYYY-MM-DD) :</label>
+      <input type="date" id="dateInput" />
+    </div>
+    
+    <button id="saveBtn">Sauvegarder</button>
+    
+    <div id="message" class="message"></div>
+    
+    <div class="shortcut-info">
+      <small>Raccourci : <kbd>Ctrl+M</kbd> pour exécuter</small>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

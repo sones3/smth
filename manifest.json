@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "SNOC Transaction Helper",
+  "version": "1.0.0",
+  "description": "Automatise la recherche de transactions sur SNOC",
+  "permissions": [
+    "storage",
+    "clipboardRead",
+    "activeTab"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "SNOC Transaction Helper"
+  },
+  "commands": {
+    "execute-search": {
+      "suggested_key": {
+        "default": "Ctrl+M",
+        "mac": "Command+M"
+      },
+      "description": "Exécuter la recherche de transaction"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://newsnoc/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "host_permissions": [
+    "*://newsnoc/*"
+  ]
+}
